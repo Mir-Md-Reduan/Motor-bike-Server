@@ -5,6 +5,9 @@ const { MongoClient } = require('mongodb');
 const ObjectId = require("mongodb").ObjectId;
 require('dotenv').config();
 
+const app = express();
+const port = process.env.PORT || 5000;
+
 
 app.use(cors());
 app.use(express.json());
@@ -22,13 +25,13 @@ async function run() {
         await client.connect();
 
         const database = client.db("MotorBike");
-        const userCollection = database.collection("Bikes");
+        const bikeCollection = database.collection("Bikes");
         const userBooking = database.collection("Booking");
         const userReview = database.collection("Review");
         console.log("db Connected");
         // API for all places for HOme
         app.get('/Bikes', async (req, res) => {
-            const cursor = userCollection.find({});
+            const cursor = bikeCollection.find({});
             const places = await cursor.toArray();
             res.send(places);
         })
@@ -115,7 +118,7 @@ async function run() {
 run().catch(console.dir);
 
 app.get('/', (req, res) => {
-    res.send('Hello From Assignment 11');
+    res.send('Hello From Assignment 12');
 });
 
 app.listen(port, (req, res) => {
