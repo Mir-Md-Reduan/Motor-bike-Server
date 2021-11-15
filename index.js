@@ -32,8 +32,8 @@ async function run() {
         // API for all places for HOme
         app.get('/Bikes', async (req, res) => {
             const cursor = bikeCollection.find({});
-            const places = await cursor.toArray();
-            res.send(places);
+            const bikes = await cursor.toArray();
+            res.send(bikes);
         })
 
         // delete Places
