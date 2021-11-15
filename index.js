@@ -35,17 +35,13 @@ async function run() {
             const bikes = await cursor.toArray();
             res.send(bikes);
         })
-
         // delete Places
-
         app.delete("/delteOrder/:id", async (req, res) => {
             const result = await userCollection.deleteOne({
                 _id: ObjectId(req.params.id),
             });
             res.send(result);
         });
-
-
         // POST API For Booking 
         app.post('/booking', async (req, res) => {
             const service = req.body;
@@ -56,9 +52,9 @@ async function run() {
 
         });
 
-        // get single Place
-        app.get("/singlePlace/:id", async (req, res) => {
-            const result = await userCollection
+        // get single Bikes information
+        app.get("/singleBike/:id", async (req, res) => {
+            const result = await bikeCollection
                 .find({ _id: ObjectId(req.params.id) })
                 .toArray();
             res.send(result[0]);
