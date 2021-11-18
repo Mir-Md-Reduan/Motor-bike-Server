@@ -26,6 +26,7 @@ async function run() {
 
         const database = client.db("MotorBike");
         const bikeCollection = database.collection("Bikes");
+        const usersCollection = database.collection("User");
         const userBooking = database.collection("Booking");
         const userReview = database.collection("Review");
         const makeAdmin = database.collection("Admin");
@@ -36,9 +37,10 @@ async function run() {
             const bikes = await cursor.toArray();
             res.send(bikes);
         })
-        // delete Places
-        app.delete("/delteOrder/:id", async (req, res) => {
-            const result = await userCollection.deleteOne({
+
+        // delete Bike
+        app.delete("/deleteBike/:id", async (req, res) => {
+            const result = await bikeCollection.deleteOne({
                 _id: ObjectId(req.params.id),
             });
             res.send(result);
@@ -84,11 +86,11 @@ async function run() {
             });
             res.send(result);
         });
-        // Adding New Tour Spot API 
-        app.post('/addTourSpot', async (req, res) => {
+        // Adding New Bikes API 
+        app.post('/addBike', async (req, res) => {
             const service = req.body;
             console.log('Hit the post API', service);
-            const result = await userCollection.insertOne(service);
+            const result = await bikeCollection.insertOne(service);
             console.log(result);
             res.json(result);
 
@@ -121,6 +123,25 @@ async function run() {
                     res.send(result);
                 });
         });
+
+        // add user admin
+        app.put('/users/admin', verifyToken, async (req, res) => {
+            const user = req.body;
+            const requester = req.decodedEmail;
+            if (requester) {
+                const requesterAccount = await usersCollection.findOne({ email: requester });
+                if (requesterAccount.role === 'admin') {
+                    const filter = { email: user.email };
+                    const updateDoc = { $set: { role: 'admin' } };
+                    const result = await usersCollection.updateOne(filter, updateDoc);
+                    res.json(result);
+                }
+            }
+            else {
+                res.status(403).json({ message: 'you do not have access to make admin' })
+            }
+
+        })
     }
     finally {
         // await client.close();
