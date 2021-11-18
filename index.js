@@ -28,6 +28,7 @@ async function run() {
         const bikeCollection = database.collection("Bikes");
         const userBooking = database.collection("Booking");
         const userReview = database.collection("Review");
+        const makeAdmin = database.collection("Admin");
         console.log("db Connected");
         // API for all places for HOme
         app.get('/Bikes', async (req, res) => {
@@ -92,6 +93,20 @@ async function run() {
             res.json(result);
 
         });
+        // Adding New Review API 
+        app.post('/addReview', async (req, res) => {
+            const service = req.body;
+            console.log('Hit the post API', service);
+            const result = await userReview.insertOne(service);
+            console.log(result);
+            res.json(result);
+        });
+        // API for all places for HOme
+        app.get('/Review', async (req, res) => {
+            const cursor = userReview.find({});
+            const review = await cursor.toArray();
+            res.send(review);
+        })
         // updated Status for pending
         app.put("/updateStatus/:id", (req, res) => {
             const id = req.params.id;
