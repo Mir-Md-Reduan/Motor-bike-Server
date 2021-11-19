@@ -29,9 +29,9 @@ async function run() {
         const usersCollection = database.collection("User");
         const userBooking = database.collection("Booking");
         const userReview = database.collection("Review");
-        const makeAdmin = database.collection("Admin");
+
         console.log("db Connected");
-        // API for all Bikes for HOme
+        // API for all Bikes for HOme and Explore and Manage All Bike product
         app.get('/Bikes', async (req, res) => {
             const cursor = bikeCollection.find({});
             const bikes = await cursor.toArray();
@@ -62,7 +62,7 @@ async function run() {
                 .toArray();
             res.send(result[0]);
         });
-        // Get All My Orders by email
+        // Get My Orders by email
         app.get("/myBookings/:email", async (req, res) => {
             console.log(req.params.email);
             const result = await userBooking
