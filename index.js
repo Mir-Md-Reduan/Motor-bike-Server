@@ -61,13 +61,15 @@ async function run() {
                 .find({ _id: ObjectId(req.params.id) })
                 .toArray();
             res.send(result[0]);
+
         });
         // Get My Orders by email
         app.get("/myBookings/:email", async (req, res) => {
             console.log(req.params.email);
             const result = await userBooking
-                .find({ email: req.params.email })
+                .find({ Email: req.params.email })
                 .toArray();
+            console.log(result)
             res.send(result);
         });
 
