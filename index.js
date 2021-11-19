@@ -31,7 +31,7 @@ async function run() {
         const userReview = database.collection("Review");
         const makeAdmin = database.collection("Admin");
         console.log("db Connected");
-        // API for all places for HOme
+        // API for all Bikes for HOme
         app.get('/Bikes', async (req, res) => {
             const cursor = bikeCollection.find({});
             const bikes = await cursor.toArray();
@@ -63,7 +63,8 @@ async function run() {
             res.send(result[0]);
         });
         // Get All My Orders by email
-        app.get("/myOrders/:email", async (req, res) => {
+        app.get("/myBookings/:email", async (req, res) => {
+            console.log(req.params.email);
             const result = await userBooking
                 .find({ email: req.params.email })
                 .toArray();
@@ -103,7 +104,46 @@ async function run() {
             console.log(result);
             res.json(result);
         });
-        // API for all places for HOme
+        // Adding New User for register API 
+        app.post('/addUser', async (req, res) => {
+            const service = req.body;
+            console.log('Hit the post API', service);
+            const result = await usersCollection.insertOne(service);
+            console.log(result);
+            res.json(result);
+        });
+        // Adding New User for Google singIn API 
+        app.put('/addUser', async (req, res) => {
+            const user = req.body;
+            console.log(user);
+            const filter = { email: user.email };
+            const options = { upsert: true };
+            const updateDoc = { $set: user };
+            const result = await usersCollection.updateOne(filter, updateDoc, options);
+            res.json(result);
+        });
+        // Adding Admin API
+        app.put("/makeAdmin", async (req, res) => {
+            const filter = { email: req.body.email };
+            const result = await usersCollection.find(filter).toArray();
+            if (result) {
+                const documents = await usersCollection.updateOne(filter, {
+                    $set: { role: "admin" },
+                });
+                console.log(documents);
+            }
+        });
+
+        // checking admin or not
+        app.get("/checkAdmin/:email", async (req, res) => {
+            const result = await usersCollection
+                .find({ email: req.params.email })
+                .toArray();
+            console.log(result);
+            res.send(result);
+        });
+
+        // API for all Review for HOme
         app.get('/Review', async (req, res) => {
             const cursor = userReview.find({});
             const review = await cursor.toArray();
@@ -124,24 +164,7 @@ async function run() {
                 });
         });
 
-        // add user admin
-        app.put('/users/admin', verifyToken, async (req, res) => {
-            const user = req.body;
-            const requester = req.decodedEmail;
-            if (requester) {
-                const requesterAccount = await usersCollection.findOne({ email: requester });
-                if (requesterAccount.role === 'admin') {
-                    const filter = { email: user.email };
-                    const updateDoc = { $set: { role: 'admin' } };
-                    const result = await usersCollection.updateOne(filter, updateDoc);
-                    res.json(result);
-                }
-            }
-            else {
-                res.status(403).json({ message: 'you do not have access to make admin' })
-            }
 
-        })
     }
     finally {
         // await client.close();
