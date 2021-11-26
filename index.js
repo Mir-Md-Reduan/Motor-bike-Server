@@ -55,7 +55,7 @@ async function run() {
 
         });
 
-        // get single Bikes information
+        // get  single Bikes information
         app.get("/singleBike/:id", async (req, res) => {
             const result = await bikeCollection
                 .find({ _id: ObjectId(req.params.id) })
